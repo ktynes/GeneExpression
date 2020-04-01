@@ -34,7 +34,7 @@ for i in range(0, numberOfGenes):
         genesAverageList.append(dataLog.iloc[j,i])
     genesAverage.append(stat.mean(genesAverageList))
     
-#add average as column in dataframe
+#add average as row in dataframe
 dataLog = dataLog.append(pd.Series(genesAverage, index=dataLog.columns, name = 'average'))
 
 #filter genes that have infinite average values
