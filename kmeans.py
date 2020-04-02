@@ -26,10 +26,11 @@ from mpl_toolkits import mplot3d
 df1 = pd.read_csv('/home/dell/Desktop/workspace/GeneExpression/combinedFiltered.csv')
 #df2=df1[:, df1.columns != 'CancerType']
 df2 = df1.drop(['CancerType'], axis=1)
-print(df2)
+#print(df2)
 n_samples, n_features = df2.shape
-print(n_samples, n_features)
-kmeans = KMeans(n_clusters=4, random_state=5)
+#print(n_samples, n_features)
+kmeans = KMeans(n_clusters = 4, n_init= 20, random_state =0)
+
 kmeans.fit(df2)
 
 true_labels=df1['CancerType'].to_numpy()
@@ -46,16 +47,28 @@ for i in true_labels:
     if i == 'Breast':
         true_labels2.append(2)
 
-#print(true_labels2)
+#print(df2.columns)
 fig = plt.figure(figsize=[8, 5])
-
+"""
 #figure, axes = plt.subplots(nrows=2, ncols=2)
 plt.subplot(1,2,1)
 plt.scatter( y=df2['ENSG00000003400.13'], x=df2['ENSG00000280002.1'],c=colour_theme[true_labels2])
 plt.subplot(1,2,2)
 plt.scatter( y=df2['ENSG00000003400.13'], x=df2['ENSG00000280002.1'],c=colour_theme[kmeans.labels_])
-fig.savefig('kmeans.png')
+#fig.savefig('kmeans.png')
+"""
+ 
+#print(set(kmeans.labels_))
+fig = plt.figure(figsize=(10,10))
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(df2['ENSG00000279019.1'],df2['ENSG00000279141.2'],df2['ENSG00000280366.1'], 
+            c=true_labels2, cmap='plasma',
+            edgecolor='k', s=20, alpha = 1)
 
+
+ax.view_init(30, -60)
+plt.draw()
+    
 
 """
 print(df2.columns)
