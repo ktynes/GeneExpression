@@ -1,0 +1,67 @@
+p
+{
+	color: blue;
+}
+
+#title
+{
+	font-size: 15px;
+	text-align: center;
+}
+
+#signature
+{
+	font-size: 10px;
+	position: relative;
+	left: 800px;
+	top: 450px;
+}
+
+#graph {
+	height: 500px;
+	width: 800px;
+	display: block;
+	position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.xAxis {
+	height: 20px;
+	width: 830px;
+	position: absolute;
+	left: 26%;
+}
+
+div.chart {
+    display: inline-block;
+    width: 10px;
+    background-color: blue;
+    margin-right: 2px;
+
+}
+.axis {
+  font: 10px sans-serif;
+}
+.bar {
+	fill: steelblue;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+
+.d3-tip {
+	line-height: 1;
+	padding: 6px;
+	background: rgba(0, 0, 0, 0.8);
+	color: #fff;
+	border-radius: 2px;
+  }
+
+.bar:hover {
+fill: orangered ;
+}
