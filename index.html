@@ -1,136 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="bar_chart.css">
+        <script type="text/javascript" src="./lib/d3.v5.min.js"></script>
+        <script type="text/javascript" src="./lib/d3-dsv.min.js"></script>
+        <script type="text/javascript" src="./lib/d3-fetch.min.js"></script>
+        <script type="text/javascript" src="./lib/d3-tip.min.js"></script>
+        <script src="https://d3js.org/d3.v4.js"></script>
+    </head>
 
-<head>
-    <meta charset="utf-8">
-    <title>Simple Template</title>
-    <style>
-        body {
-            font: 10px sans-serif;
-        }
-
-        h2 {
-            margin-top: 0;
-            color: grey;
-        }
-
-        .content {
-            fill: lightsteelblue;
-        }
-
-        .label {
-            fill: white;
-            font-size: x-large;
-            font-weight: bolder;
-        }
-
-        .breast:hover {
-            fill: rgb(255, 127, 80)
-        }
-    </style>
-    <script src="https://d3js.org/d3.v4.js"></script>
-</head>
-
-<body>
-    <div id="body-container"></div>
-    <script>
-        // Body image ================================================
-        hema = null, lung = null, breast = null, kidney = null
-        d3.xml("svg_human_edit.svg", data => {
-            d3.select("#body-container").node().append(data.documentElement)
-            svg = d3.select("#body-container > svg")
-                .style("width", 395 + 'px')
-                .style("height", 1086 + 'px');
-            console.log(svg)
-
-            svg.select(".hema").on("click", function () {
-                    hema.style.fill = "rgb(169,169, 169)"
-                    setTimeout(() => {
-                        hema.style.fill = hema.oriColor
-                    }, 100);
-                    clickedOnHema()
-                }).on("mouseover", function (d) {
-                    if (!hema) {
-                        hema = this
-                        hema.oriColor = hema.style.fill
-                    }
-                    d3.select(this).style("fill", "rgb(255,127,80)")
-                })
-                .on("mouseout", function (d) {
-                    d3.select(this).style("fill", hema.oriColor)
-                });
-
-            svg.select(".kidney").on("click", function () {
-
-                    kidney.style.fill = "rgb(169,169, 169)"
-                    setTimeout(() => {
-                        kidney.style.fill = kidney.oriColor
-                    }, 100);
-                    clickedOnKidney()
-                }).on("mouseover", function (d) {
-                    if (!kidney) {
-                        kidney = this
-                        kidney.oriColor = kidney.style.fill
-                    }
-                    d3.select(this).style("fill", "rgb(255,127,80)")
-                })
-                .on("mouseout", function (d) {
-                    d3.select(this).style("fill", kidney.oriColor)
-                });
-
-            svg.select(".lung").on("click", function () {
-                    lung.style.fill = "rgb(169,169, 169)"
-                    setTimeout(() => {
-                        lung.style.fill = lung.oriColor
-                    }, 100);
-                    clickedOnLung()
-                }).on("mouseover", function (d) {
-                    if (!lung) {
-                        lung = this
-                        lung.oriColor = lung.style.fill
-                    }
-                    d3.select(this).style("fill", "rgb(255,127,80)")
-                })
-                .on("mouseout", function (d) {
-                    d3.select(this).style("fill", lung.oriColor)
-                });
-
-            svg.select(".breast").on("click", function () {
-                    breast.style.fill = "rgb(169,169, 169)"
-                    setTimeout(() => {
-                        breast.style.fill = breast.oriColor
-                    }, 100);
-                    clickedOnBreast();
-                }).on("mouseover", function (d) {
-                    if (!breast) {
-                        breast = this
-                        breast.oriColor = breast.style.fill
-                    }
-                    d3.select(this).style("fill", "rgb(255,127,80)")
-                })
-                .on("mouseout", function (d) {
-                    d3.select(this).style("fill", breast.oriColor)
-                });
-        });
-
-        function clickedOnKidney() {
-
-        }
-
-        function clickedOnHema() {
-
-        }
-
-        function clickedOnLung() {
-
-        }
-
-        function clickedOnBreast() {
-
-        }
-    </script>
-
-
-</body>
-
+    <body>
+        <div id="container">
+        <div id="body-container"></div>
+    	<div id="graph" >
+            <!-- <h1 id="title">Gene importance by organ </h1> -->
+        </div>
+        </div>
+        <script type="text/javascript" src="bar_chart.js"> </script>
+    </body>
 </html>

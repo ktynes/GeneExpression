@@ -24,6 +24,9 @@ p
 	position: relative;
     margin-left: auto;
     margin-right: auto;
+    /*float: right; 
+    display: inline-block; */
+
 }
 
 .xAxis {
@@ -64,4 +67,33 @@ div.chart {
 
 .bar:hover {
 fill: orangered ;
+}
+
+
+/*body {
+    font: 10px sans-serif;
+}*/
+
+h2 {
+    margin-top: 0;
+    color: grey;
+}
+
+.content {
+    fill: lightsteelblue;
+}
+
+.label {
+    fill: white;
+    font-size: x-large;
+    font-weight: bolder;
+}
+
+.breast:hover {
+    fill: rgb(255, 127, 80)
+}
+
+#body-container {
+	display: inline-block;
+	 float: left; 
 }
