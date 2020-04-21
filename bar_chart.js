@@ -149,22 +149,21 @@ d3.xml("svg_human_edit.svg", data => {
 
     svg2.select(".kidney").on("click", function () {
 
-            kidney.style.fill = "rgb(169,169, 169)"
-            setTimeout(() => {
-                kidney.style.fill = kidney.oriColor
-            }, 100);
+		kidney.style("fill", "rgb(169,169, 169)")
+		setTimeout(() => {
+			kidney.style("fill", kidney.oriColor)
+		}, 100);
             
         }).on("mouseover", function (d) {
             if (!kidney) {
-                kidney = this
-                kidney.oriColor = kidney.style.fill
-                
+				kidney = d3.select(this).select("#path2409")
+                kidney.oriColor = kidney.style("fill")
             }
-            d3.select(this).style("fill", "rgb(255,127,80)")
+            d3.select(this).attr("opacity", "1")
             clickedOnKidney()
         })
         .on("mouseout", function (d) {
-            d3.select(this).style("fill", kidney.oriColor)
+            d3.select(this).attr("opacity", 0.64)
         });
 
     svg2.select(".lung").on("click", function () {
