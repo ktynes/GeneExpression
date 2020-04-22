@@ -9,6 +9,32 @@ p
 	text-align: center;
 }
 
+body
+{
+	background-color: rgb(230, 249, 255);
+}
+#header
+{
+	font-family: arial;
+	font-size: 30px;
+	text-align: center;
+}
+
+#description
+{
+	font-family: arial;
+	font-size: 15px;
+	color: black;
+	display: inline-block;
+	text-align: left;
+	width: 1000px;
+}
+
+#description_wrapper 
+{
+	text-align: center;
+}
+
 #signature
 {
 	font-size: 10px;
