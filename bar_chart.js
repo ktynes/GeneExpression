@@ -106,7 +106,7 @@ d3.dsv(
 
 	//add bar chart title
 	svg.append("text")
-	.text("Genes importance by organ: " + "Kidney")
+	.text("Important genes by organ: " + "Kidney")
 	.attr("id", "barChartTitle")
 	.attr('x', width / 2)
 	.attr('y', 0 - margin.top / 2)
