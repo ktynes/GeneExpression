@@ -7,4 +7,4 @@ In this project, we explored the relationship between genes and cancer types usi
 The d3 visualization for our project is hosted here: https://ktynes.github.io/GeneExpression/
 
 ## Installation & Execution
-Firstly, you need to create a python3 virtual environment. Do this by installing the requirements in requirements.txt and run run.py.
+Firstly, you need to create a python3 virtual environment. Do this by installing the requirements in requirements.txt and run run.py. Lastly, navigate to http://0.0.0.0:8000/ to view the visualization.
