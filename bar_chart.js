@@ -4,7 +4,7 @@ const margin = {
 	left: 100,
 	bottom: 75
 };
-const fullWidth = 570; //850
+const fullWidth = 560; //850
 const fullHeight = 550; //800 //1000
 const width = fullWidth - margin.left - margin.right;
 const height = fullHeight - margin.top - margin.bottom;
@@ -20,7 +20,7 @@ var thresholdNumber = 10;
 // tip tool
 var tip = d3.tip()
   .attr('class', 'd3-tip')
-  .offset([35, 300])
+  .offset([35, 280])
   .html(function(d) {
     return d.Ontology ;
   })

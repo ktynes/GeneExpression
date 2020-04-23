@@ -50,7 +50,7 @@ body
 	display: inline-block;
 	/*position: relative; */
 	position: relative;
-    margin-left: auto;
+    margin-left: 0px;
     margin-right: auto;
 /*    border: 2px solid black;*/
 
@@ -59,11 +59,12 @@ body
 #heatmap_container {
 	display: inline-block;
 	margin-top: 0px;
-	margin-left: 40px;
+	margin-left: 80px;
+	margin-right: 0px;
 }
 #heatmap {
    	position: relative;
-    width: 500px;
+    width: 470px;
     height: 500px;
 /*    border: 2px solid black;*/
 
@@ -136,6 +137,7 @@ h2 {
 #body-container {
 	display: inline-block;
 	 float: left; 
+	 margin-right: 0px;
 	 /*border: 2px solid black; */
 }
 
@@ -160,12 +162,12 @@ h2 {
 	color: black;
 }
 
-.d3-tip, .axis_label {
+.axis_label {
 	font-family: arial;
 	font-size: 15px;
 }
 
-.x_axis, .y_axis{
+.x_axis, .y_axis, .d3-tip{
 	font-family: arial;
 	font-size: 12px;
 }
