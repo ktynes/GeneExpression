@@ -45,15 +45,27 @@ body
 }
 
 #graph {
-	height: 500px;
-	width: 800px;
-	display: block;
+/*	height: 500px;
+	width: 800px;*/
+	display: inline-block;
+	/*position: relative; */
 	position: relative;
     margin-left: auto;
     margin-right: auto;
-    /*float: right; 
-    display: inline-block; */
-     /*border: 2px solid black; */
+/*    border: 2px solid black;*/
+
+}
+
+#heatmap_container {
+	display: inline-block;
+	margin-top: 0px;
+	margin-left: 40px;
+}
+#heatmap {
+   	position: relative;
+    width: 500px;
+    height: 500px;
+/*    border: 2px solid black;*/
 
 }
 
@@ -122,7 +134,7 @@ h2 {
 }
 
 #body-container {
-	display: block;
+	display: inline-block;
 	 float: left; 
 	 /*border: 2px solid black; */
 }
