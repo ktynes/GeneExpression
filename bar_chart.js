@@ -1,18 +1,22 @@
 const margin = {
-	top: 50,
+	top: 75,
 	right: 15,
-	left: 200,
-	bottom: 50
+	left: 100,
+	bottom: 75
 };
 const fullWidth = 600; //850
-const fullHeight = 800; //1000
+const fullHeight = 550; //800 //1000
 const width = fullWidth - margin.left - margin.right;
 const height = fullHeight - margin.top - margin.bottom;
+
+// definitions for ontology legend
+var definitions = ['<b>Cellular Component:</b> The parts of a cell or its extracellular environment.', '<b>Molecular Function:</b> The elemental activities of a gene product at the molecular level, such as binding or catalysis.',
+'<b>Biological Process:</b> Operations or sets of molecular events with a defined beginning and end, pertinent to the functioning of integrated living units: cells, tissues, organs, and organisms.'];
 
 // format to round data importance
 var format = d3.format(".3f");
 // threshold to filter data 
-var threshold = 0.001;
+var thresholdNumber = 10;
 // tip tool
 var tip = d3.tip()
   .attr('class', 'd3-tip')
@@ -34,27 +38,22 @@ svg.call(tip);
 
 d3.dsv(
 	",",
-	"Gene_Importance.csv",
+	"Gene_importance_complete.csv",
 	function (row) {
-		row.Kidney = +format(row.Kidney);		// Here Kidney is plotted, change it accordingly everywhere except in the definition of 'Others' (Line50)
+		row.Lung = +format(row.Lung);		// Here Lung is plotted, change it accordingly everywhere 
 		return row;
 	}
 ).then((data) => {			
 	
-	var originalDataLength = data.length;
-
-	// filter data to keep only importance > threshold
-	data = data.filter(function(d, i) { 
-		return d.Kidney > threshold ; });
-	
-	// add Others for all genes with importance <= threshold. DO NOT change this definition
-	data.push({Gene: (originalDataLength - data.length) + ' Others', Blood: 0.001, Breast: 0.001, Kidney: 0.001, Lung: 0.001, Ontology: 'Importance <= ' + threshold });
-
 	// order data 		
-	data = data.sort((a, b) => d3.ascending(format(a.Kidney), format(b.Kidney)));
+	data = data.sort((a, b) => d3.ascending(format(a.Lung), format(b.Lung)));
+
+	// filter data to keep only top (thresholdNumber) important genes for each cancer type
+	data = data.filter(function(d, i) { 
+		return data.length - i <= thresholdNumber ; });
 
 	// max importance
-	maxCount = d3.max(data, function (d) { return Number(d.Kidney); });
+	maxCount = d3.max(data, function (d) { return Number(d.Lung); });
 
 	// x and y scales and axis
 	var xScaleBarChart = d3.scaleLinear()
@@ -64,19 +63,20 @@ d3.dsv(
 	var yScaleBarChart = d3.scaleBand()
 		.range([height, 0])
 		.domain(data.map(function (d) {
-			return d.Gene;
+			return d.Name;
 		}))
 		.padding(0.05);
 
-	var xAxis = d3.axisTop(xScaleBarChart);
+	var xAxis = d3.axisBottom(xScaleBarChart);
 	var yAxis = d3.axisLeft(yScaleBarChart);
 
 	svg.append("g")
-		.classed('x axis', true)
-		.call(xAxis);
+		.classed('x_axis', true)
+		.call(xAxis)
+		.attr("transform", "translate(0," + height + ")")
 
 	svg.append("g")
-		.classed('y axis', true)
+		.classed('y_axis', true)
 		.call(yAxis);
 	
 	// add grid to the horizontal chart
@@ -96,10 +96,10 @@ d3.dsv(
 		.attr("fill", "steelblue")
 		.attr("x", xScaleBarChart(0))
 		.attr("y", (d) => {
-			return yScaleBarChart(d.Gene);
+			return yScaleBarChart(d.Name);
 		})
 		.attr("width", (d) => {
-			return xScaleBarChart(d.Kidney);
+			return xScaleBarChart(d.Lung);
 		})
 		.attr("height", yScaleBarChart.bandwidth())
 		.on('mouseover', tip.show)
@@ -107,11 +107,41 @@ d3.dsv(
 
 	//add bar chart title
 	svg.append("text")
-	.text("Genes importance by organ: " + "Kidney")
+	.text("Top 10 Important Genes by Organ: " + "Lung")
 	.attr("id", "barChartTitle")
 	.attr('x', width / 2)
-	.attr('y', 0 - margin.top / 2)
+	.attr('y', 0 - margin.top / 4)
 	.style("text-anchor", "middle");
+
+	//x axis label
+	svg.append("text")             
+	  	.attr('x', width / 2)
+		.attr('y', height + 35)
+	  	.style("text-anchor", "middle")
+	  	.text("Importance Metric")
+	  	.attr("class", "axis_label");
+
+	//y axis label
+	svg.append("text")
+     	.attr("transform", "rotate(-90)")
+     	.attr("y", -margin.left + 10)
+     	.attr("x",-height/2)
+     	.attr("dy", "1em")
+     	.style("text-anchor", "middle")
+     	.text("Gene Name")  
+     	.attr("class", "axis_label");  
+
+	// add ontology legend
+	var ul = d3.select("#legend")
+				.append("ul")
+				// .attr("id","legend");
+
+	ul.selectAll('li')
+		.data(definitions)
+		.enter()
+		.append('li')
+		.attr("id","legend_text")
+		.html(String);
 
 });
 
@@ -208,6 +238,7 @@ d3.xml("svg_human_edit.svg", data => {
 function clickedOnKidney() {
 	console.log("Kidney")
 	d3.select('#bar_chart').remove()
+	// d3.select('#legend').remove()
 
 	var svg = d3.select("body")
 	.select("#graph")
@@ -222,24 +253,19 @@ function clickedOnKidney() {
 
 	d3.dsv(
 		",",
-		"Gene_Importance.csv",
+		"Gene_importance_complete.csv",
 		function (row) {
-			row.Kidney = +format(row.Kidney);		// Here Kidney is plotted, change it accordingly everywhere except in the definition of 'Others' (Line50)
+			row.Kidney = +format(row.Kidney);		// Here Kidney is plotted, change it accordingly everywhere 
 			return row;
 		}
 	).then((data) => {			
 		
-		var originalDataLength = data.length;
-
-		// filter data to keep only importance > threshold
-		data = data.filter(function(d, i) { 
-			return d.Kidney > threshold ; });
-		
-		// add Others for all genes with importance <= threshold. DO NOT change this definition
-		data.push({Gene: (originalDataLength - data.length) + ' Others', Blood: 0.001, Breast: 0.001, Kidney: 0.001, Lung: 0.001, Ontology: 'Importance <= ' + threshold });
-
 		// order data 		
 		data = data.sort((a, b) => d3.ascending(format(a.Kidney), format(b.Kidney)));
+
+		// filter data to keep only top (thresholdNumber) important genes for each cancer type
+		data = data.filter(function(d, i) { 
+			return data.length - i <= thresholdNumber ; });
 
 		// max importance
 		maxCount = d3.max(data, function (d) { return Number(d.Kidney); });
@@ -252,19 +278,20 @@ function clickedOnKidney() {
 		var yScaleBarChart = d3.scaleBand()
 			.range([height, 0])
 			.domain(data.map(function (d) {
-				return d.Gene;
+				return d.Name;
 			}))
 			.padding(0.05);
 
-		var xAxis = d3.axisTop(xScaleBarChart);
+		var xAxis = d3.axisBottom(xScaleBarChart);
 		var yAxis = d3.axisLeft(yScaleBarChart);
 
 		svg.append("g")
-			.classed('x axis', true)
-			.call(xAxis);
+			.classed('x_axis', true)
+			.call(xAxis)
+			.attr("transform", "translate(0," + height + ")")
 
 		svg.append("g")
-			.classed('y axis', true)
+			.classed('y_axis', true)
 			.call(yAxis);
 		
 		// add grid to the horizontal chart
@@ -284,7 +311,7 @@ function clickedOnKidney() {
 			.attr("fill", "steelblue")
 			.attr("x", xScaleBarChart(0))
 			.attr("y", (d) => {
-				return yScaleBarChart(d.Gene);
+				return yScaleBarChart(d.Name);
 			})
 			.attr("width", (d) => {
 				return xScaleBarChart(d.Kidney);
@@ -295,18 +322,36 @@ function clickedOnKidney() {
 
 		//add bar chart title
 		svg.append("text")
-		.text("Genes importance by organ: " + "Kidney")
+		.text("Top 10 Important Genes by Organ: " + "Kidney")
 		.attr("id", "barChartTitle")
 		.attr('x', width / 2)
-		.attr('y', 0 - margin.top / 2)
+		.attr('y', 0 - margin.top / 4)
 		.style("text-anchor", "middle");
 
+		//x axis label
+		svg.append("text")             
+		  	.attr('x', width / 2)
+			.attr('y', height + 35)
+		  	.style("text-anchor", "middle")
+		  	.text("Importance Metric")
+		  	.attr("class", "axis_label");
+
+		//y axis label
+		svg.append("text")
+	     	.attr("transform", "rotate(-90)")
+	     	.attr("y", -margin.left + 10)
+	     	.attr("x",-height/2)
+	     	.attr("dy", "1em")
+	     	.style("text-anchor", "middle")
+	     	.text("Gene Name")    
+	  		.attr("class", "axis_label");
 	});
 }
 
 function clickedOnHema() {
 	console.log("Blood")
 	d3.select('#bar_chart').remove()
+	// d3.select('#legend').remove()
 
 	var svg = d3.select("body")
 	.select("#graph")
@@ -321,24 +366,19 @@ function clickedOnHema() {
 
 	d3.dsv(
 		",",
-		"Gene_Importance.csv",
+		"Gene_importance_complete.csv",
 		function (row) {
-			row.Blood = +format(row.Blood);		// Here Kidney is plotted, change it accordingly everywhere except in the definition of 'Others' (Line50)
+			row.Blood = +format(row.Blood);		// Here Blood is plotted, change it accordingly everywhere 
 			return row;
 		}
 	).then((data) => {			
 		
-		var originalDataLength = data.length;
-
-		// filter data to keep only importance > threshold
-		data = data.filter(function(d, i) { 
-			return d.Blood > threshold ; });
-		
-		// add Others for all genes with importance <= threshold. DO NOT change this definition
-		data.push({Gene: (originalDataLength - data.length) + ' Others', Blood: 0.001, Breast: 0.001, Kidney: 0.001, Lung: 0.001, Ontology: 'Importance <= ' + threshold });
-
 		// order data 		
 		data = data.sort((a, b) => d3.ascending(format(a.Blood), format(b.Blood)));
+
+		// filter data to keep only top (thresholdNumber) important genes for each cancer type
+		data = data.filter(function(d, i) { 
+			return data.length - i <= thresholdNumber ; });
 
 		// max importance
 		maxCount = d3.max(data, function (d) { return Number(d.Blood); });
@@ -351,19 +391,20 @@ function clickedOnHema() {
 		var yScaleBarChart = d3.scaleBand()
 			.range([height, 0])
 			.domain(data.map(function (d) {
-				return d.Gene;
+				return d.Name;
 			}))
 			.padding(0.05);
 
-		var xAxis = d3.axisTop(xScaleBarChart);
+		var xAxis = d3.axisBottom(xScaleBarChart)
 		var yAxis = d3.axisLeft(yScaleBarChart);
 
 		svg.append("g")
-			.classed('x axis', true)
-			.call(xAxis);
+			.classed('x_axis', true)
+			.call(xAxis)
+			.attr("transform", "translate(0," + height + ")")
 
 		svg.append("g")
-			.classed('y axis', true)
+			.classed('y_axis', true)
 			.call(yAxis);
 		
 		// add grid to the horizontal chart
@@ -383,7 +424,7 @@ function clickedOnHema() {
 			.attr("fill", "steelblue")
 			.attr("x", xScaleBarChart(0))
 			.attr("y", (d) => {
-				return yScaleBarChart(d.Gene);
+				return yScaleBarChart(d.Name);
 			})
 			.attr("width", (d) => {
 				return xScaleBarChart(d.Blood);
@@ -394,18 +435,36 @@ function clickedOnHema() {
 
 		//add bar chart title
 		svg.append("text")
-		.text("Genes importance by organ: " + "Blood")
+		.text("Top 10 Important Genes by Organ: " + "Blood")
 		.attr("id", "barChartTitle")
 		.attr('x', width / 2)
-		.attr('y', 0 - margin.top / 2)
+		.attr('y', 0 - margin.top / 4)
 		.style("text-anchor", "middle");
 
+		//x axis label
+		svg.append("text")             
+		  	.attr('x', width / 2)
+			.attr('y', height + 35)
+		  	.style("text-anchor", "middle")
+		  	.text("Importance Metric")
+		  	.attr("class", "axis_label");
+
+		//y axis label
+		svg.append("text")
+	     	.attr("transform", "rotate(-90)")
+	     	.attr("y", -margin.left + 10)
+	     	.attr("x",-height/2)
+	     	.attr("dy", "1em")
+	     	.style("text-anchor", "middle")
+	     	.text("Gene Name") 
+	  		.attr("class", "axis_label");
 	});
 }
 
 function clickedOnLung() {
 	console.log("Lung")
 	d3.select('#bar_chart').remove()
+	// d3.select('#legend').remove()
 
 	var svg = d3.select("body")
 	.select("#graph")
@@ -420,24 +479,19 @@ function clickedOnLung() {
 
 	d3.dsv(
 		",",
-		"Gene_Importance.csv",
+		"Gene_importance_complete.csv",
 		function (row) {
-			row.Lung = +format(row.Lung);		// Here Kidney is plotted, change it accordingly everywhere except in the definition of 'Others' (Line50)
+			row.Lung = +format(row.Lung);		// Here Lung is plotted, change it accordingly everywhere 
 			return row;
 		}
 	).then((data) => {			
 		
-		var originalDataLength = data.length;
-
-		// filter data to keep only importance > threshold
-		data = data.filter(function(d, i) { 
-			return d.Lung > threshold ; });
-		
-		// add Others for all genes with importance <= threshold. DO NOT change this definition
-		data.push({Gene: (originalDataLength - data.length) + ' Others', Blood: 0.001, Breast: 0.001, Kidney: 0.001, Lung: 0.001, Ontology: 'Importance <= ' + threshold });
-
 		// order data 		
 		data = data.sort((a, b) => d3.ascending(format(a.Lung), format(b.Lung)));
+
+		// filter data to keep only top (thresholdNumber) important genes for each cancer type
+		data = data.filter(function(d, i) { 
+			return data.length - i <= thresholdNumber ; });
 
 		// max importance
 		maxCount = d3.max(data, function (d) { return Number(d.Lung); });
@@ -450,19 +504,20 @@ function clickedOnLung() {
 		var yScaleBarChart = d3.scaleBand()
 			.range([height, 0])
 			.domain(data.map(function (d) {
-				return d.Gene;
+				return d.Name;
 			}))
 			.padding(0.05);
 
-		var xAxis = d3.axisTop(xScaleBarChart);
+		var xAxis = d3.axisBottom(xScaleBarChart);
 		var yAxis = d3.axisLeft(yScaleBarChart);
 
 		svg.append("g")
-			.classed('x axis', true)
-			.call(xAxis);
+			.classed('x_axis', true)
+			.call(xAxis)
+			.attr("transform", "translate(0," + height + ")")
 
 		svg.append("g")
-			.classed('y axis', true)
+			.classed('y_axis', true)
 			.call(yAxis);
 		
 		// add grid to the horizontal chart
@@ -482,7 +537,7 @@ function clickedOnLung() {
 			.attr("fill", "steelblue")
 			.attr("x", xScaleBarChart(0))
 			.attr("y", (d) => {
-				return yScaleBarChart(d.Gene);
+				return yScaleBarChart(d.Name);
 			})
 			.attr("width", (d) => {
 				return xScaleBarChart(d.Lung);
@@ -493,18 +548,36 @@ function clickedOnLung() {
 
 		//add bar chart title
 		svg.append("text")
-		.text("Genes importance by organ: " + "Lung")
+		.text("Top 10 Important Genes by Organ: " + "Lung")
 		.attr("id", "barChartTitle")
 		.attr('x', width / 2)
-		.attr('y', 0 - margin.top / 2)
+		.attr('y', 0 - margin.top / 4)
 		.style("text-anchor", "middle");
 
+		//x axis label
+		svg.append("text")             
+		  	.attr('x', width / 2)
+			.attr('y', height + 35)
+		  	.style("text-anchor", "middle")
+		  	.text("Importance Metric")
+		  	.attr("class", "axis_label");
+
+		//y axis label
+		svg.append("text")
+	     	.attr("transform", "rotate(-90)")
+	     	.attr("y", -margin.left + 10)
+	     	.attr("x",-height/2)
+	     	.attr("dy", "1em")
+	     	.style("text-anchor", "middle")
+	     	.text("Gene Name")    
+	  		.attr("class", "axis_label");
 	});
 }
 
 function clickedOnBreast() {
 	console.log("Breast")
 	d3.select('#bar_chart').remove()
+	// d3.select('#legend').remove()
 
 	var svg = d3.select("body")
 	.select("#graph")
@@ -519,24 +592,19 @@ function clickedOnBreast() {
 
 	d3.dsv(
 		",",
-		"Gene_Importance.csv",
+		"Gene_importance_complete.csv",
 		function (row) {
-			row.Breast = +format(row.Breast);		// Here Kidney is plotted, change it accordingly everywhere except in the definition of 'Others' (Line50)
+			row.Breast = +format(row.Breast);		// Here Breast is plotted, change it accordingly everywhere 
 			return row;
 		}
 	).then((data) => {			
 		
-		var originalDataLength = data.length;
-
-		// filter data to keep only importance > threshold
-		data = data.filter(function(d, i) { 
-			return d.Breast > threshold ; });
-		
-		// add Others for all genes with importance <= threshold. DO NOT change this definition
-		data.push({Gene: (originalDataLength - data.length) + ' Others', Blood: 0.001, Breast: 0.001, Kidney: 0.001, Lung: 0.001, Ontology: 'Importance <= ' + threshold });
-
 		// order data 		
 		data = data.sort((a, b) => d3.ascending(format(a.Breast), format(b.Breast)));
+
+		// filter data to keep only top (thresholdNumber) important genes for each cancer type
+		data = data.filter(function(d, i) { 
+			return data.length - i <= thresholdNumber ; });
 
 		// max importance
 		maxCount = d3.max(data, function (d) { return Number(d.Breast); });
@@ -549,19 +617,20 @@ function clickedOnBreast() {
 		var yScaleBarChart = d3.scaleBand()
 			.range([height, 0])
 			.domain(data.map(function (d) {
-				return d.Gene;
+				return d.Name;
 			}))
 			.padding(0.05);
 
-		var xAxis = d3.axisTop(xScaleBarChart);
+		var xAxis = d3.axisBottom(xScaleBarChart);
 		var yAxis = d3.axisLeft(yScaleBarChart);
 
 		svg.append("g")
-			.classed('x axis', true)
-			.call(xAxis);
+			.classed('x_axis', true)
+			.call(xAxis)
+			.attr("transform", "translate(0," + height + ")")
 
 		svg.append("g")
-			.classed('y axis', true)
+			.classed('y_axis', true)
 			.call(yAxis);
 		
 		// add grid to the horizontal chart
@@ -581,7 +650,7 @@ function clickedOnBreast() {
 			.attr("fill", "steelblue")
 			.attr("x", xScaleBarChart(0))
 			.attr("y", (d) => {
-				return yScaleBarChart(d.Gene);
+				return yScaleBarChart(d.Name);
 			})
 			.attr("width", (d) => {
 				return xScaleBarChart(d.Breast);
@@ -592,11 +661,28 @@ function clickedOnBreast() {
 
 		//add bar chart title
 		svg.append("text")
-		.text("Genes importance by organ: " + "Breast")
+		.text("Top 10 Important Genes by Organ: " + "Breast")
 		.attr("id", "barChartTitle")
 		.attr('x', width / 2)
-		.attr('y', 0 - margin.top / 2)
+		.attr('y', 0 - margin.top / 4)
 		.style("text-anchor", "middle");
 
+		//x axis label
+		svg.append("text")             
+		  	.attr('x', width / 2)
+			.attr('y', height + 35)
+		  	.style("text-anchor", "middle")
+		  	.text("Importance Metric")
+		  	.attr("class", "axis_label");
+
+		//y axis label
+		svg.append("text")
+	     	.attr("transform", "rotate(-90)")
+	     	.attr("y", -margin.left + 10)
+	     	.attr("x",-height/2)
+	     	.attr("dy", "1em")
+	     	.style("text-anchor", "middle")
+	     	.text("Gene Name")
+	     	.attr("class", "axis_label");  
 	});
 }

@@ -5,7 +5,8 @@ p
 
 #title
 {
-	font-size: 15px;
+	font-family: arial;
+	font-size: 18px;
 	text-align: center;
 }
 
@@ -52,6 +53,7 @@ body
     margin-right: auto;
     /*float: right; 
     display: inline-block; */
+     /*border: 2px solid black; */
 
 }
 
@@ -120,6 +122,38 @@ h2 {
 }
 
 #body-container {
-	display: inline-block;
+	display: block;
 	 float: left; 
+	 /*border: 2px solid black; */
+}
+
+#legend {
+	width: 500px;
+	border: 2px solid black;
+	margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    float:left;
+    border-radius: 10px;
+    padding: 0px;
+    font-size: 15px;
+    font-family: arial;
+}
+
+#legend_title, #barChartTitle {
+	font-family: arial;
+	font-size: 18px;
+	text-align: center;
+	color: black;
+}
+
+.d3-tip, .axis_label {
+	font-family: arial;
+	font-size: 15px;
+}
+
+.x_axis, .y_axis{
+	font-family: arial;
+	font-size: 12px;
 }
