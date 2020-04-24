@@ -5,7 +5,34 @@ p
 
 #title
 {
+	font-family: arial;
+	font-size: 18px;
+	text-align: center;
+}
+
+body
+{
+	background-color: rgb(230, 249, 255);
+}
+#header
+{
+	font-family: arial;
+	font-size: 30px;
+	text-align: center;
+}
+
+#description
+{
+	font-family: arial;
 	font-size: 15px;
+	color: black;
+	display: inline-block;
+	text-align: left;
+	width: 1000px;
+}
+
+#description_wrapper 
+{
 	text-align: center;
 }
 
@@ -18,12 +45,28 @@ p
 }
 
 #graph {
-	height: 500px;
-	width: 800px;
-	display: block;
+/*	height: 500px;
+	width: 800px;*/
+	display: inline-block;
+	/*position: relative; */
 	position: relative;
-    margin-left: auto;
+    margin-left: 0px;
     margin-right: auto;
+/*    border: 2px solid black;*/
+
+}
+
+#graph2 {
+	display: inline-block;
+	margin-top: 0px;
+	margin-left: 11px;
+	margin-right: 0px;
+	position: relative;
+	/*border: 2px solid black; */
+    width: 560px;
+    height: 550px;
+}
+
 }
 
 .xAxis {
@@ -63,5 +106,78 @@ div.chart {
   }
 
 .bar:hover {
-fill: orangered ;
+fill: #C70039 ;
+}
+
+
+/*body {
+    font: 10px sans-serif;
+}*/
+
+h2 {
+    margin-top: 0;
+    color: grey;
+}
+
+.content {
+    fill: lightsteelblue;
+}
+
+.label {
+    fill: white;
+    font-size: x-large;
+    font-weight: bolder;
+}
+
+.breast:hover {
+    fill: rgb(255, 127, 80)
+}
+
+#body-container {
+	display: inline-block;
+	 float: left; 
+	 margin-right: 0px;
+	 /*border: 2px solid black; */
+}
+
+#legend {
+	width: 500px;
+	border: 2px solid black;
+	margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    float:left;
+    border-radius: 10px;
+    padding: 0px;
+    font-size: 15px;
+    font-family: arial;
+}
+
+#legend_title, #barChartTitle, #lineChartTitle {
+	font-family: arial;
+	font-size: 18px;
+	text-align: center;
+	color: black;
+}
+
+.axis_label {
+	font-family: arial;
+	font-size: 15px;
+}
+
+.x_axis, .y_axis, .d3-tip{
+	font-family: arial;
+	font-size: 11px;
+}
+
+.line {
+	fill: none;
+	stroke: #C70039;
+	stroke-width: 1;
+}
+
+.symbol {
+	fill: #C70039;
+	stroke: #C70039;
 }
