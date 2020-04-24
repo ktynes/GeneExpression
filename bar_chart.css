@@ -56,17 +56,16 @@ body
 
 }
 
-#heatmap_container {
+#graph2 {
 	display: inline-block;
 	margin-top: 0px;
-	margin-left: 80px;
+	margin-left: 11px;
 	margin-right: 0px;
+	position: relative;
+	/*border: 2px solid black; */
+    width: 560px;
+    height: 550px;
 }
-#heatmap {
-   	position: relative;
-    width: 470px;
-    height: 500px;
-/*    border: 2px solid black;*/
 
 }
 
@@ -107,7 +106,7 @@ div.chart {
   }
 
 .bar:hover {
-fill: orangered ;
+fill: #C70039 ;
 }
 
 
@@ -155,7 +154,7 @@ h2 {
     font-family: arial;
 }
 
-#legend_title, #barChartTitle {
+#legend_title, #barChartTitle, #lineChartTitle {
 	font-family: arial;
 	font-size: 18px;
 	text-align: center;
@@ -169,5 +168,16 @@ h2 {
 
 .x_axis, .y_axis, .d3-tip{
 	font-family: arial;
-	font-size: 12px;
+	font-size: 11px;
+}
+
+.line {
+	fill: none;
+	stroke: #C70039;
+	stroke-width: 1;
+}
+
+.symbol {
+	fill: #C70039;
+	stroke: #C70039;
 }

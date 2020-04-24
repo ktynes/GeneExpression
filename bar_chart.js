@@ -4,7 +4,7 @@ const margin = {
 	left: 100,
 	bottom: 75
 };
-const fullWidth = 560; //850
+const fullWidth = 549; //850
 const fullHeight = 550; //800 //1000
 const width = fullWidth - margin.left - margin.right;
 const height = fullHeight - margin.top - margin.bottom;
@@ -20,7 +20,7 @@ var thresholdNumber = 10;
 // tip tool
 var tip = d3.tip()
   .attr('class', 'd3-tip')
-  .offset([35, 280])
+  .offset([35, 274])
   .html(function(d) {
     return d.Ontology ;
   })
@@ -38,9 +38,10 @@ svg.call(tip);
 
 d3.dsv(
 	",",
-	"Gene_importance_complete.csv",
+	"Gene_Importance_With_Expression.csv",
 	function (row) {
 		row.Lung = +format(row.Lung);		// Here Lung is plotted, change it accordingly everywhere 
+		row.Lung_Expression = +format(row.Lung_Expression);
 		return row;
 	}
 ).then((data) => {			
@@ -143,6 +144,106 @@ d3.dsv(
 		.attr("id","legend_text")
 		.html(String);
 
+	//Line Chart
+	var svg3 = d3.select("body")
+		.select("#graph2")
+		.append("svg")
+		.attr("id","line_chart")
+		.attr("width", fullWidth)
+		.attr("height", fullHeight)
+		.append("g")
+		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+	//max expression
+	maxExp = d3.max(data, function (d) { return Number(d.Lung_Expression); });
+
+	var yScaleLineChart = d3.scaleLinear()
+		.domain([0, maxExp])
+		.range([height, 0]);
+
+	var xScaleLineChart = d3.scaleBand()
+		.range([0, width])
+		.domain(data.map(function (d) {
+			return d.Name;
+		}))
+		//.padding(0.05);
+
+	var xScaleLineChart2 = d3.scaleBand()
+		.range([22, width + 22])
+		.domain(data.map(function (d) {
+			return d.Name;
+		}))
+		//.padding(0.05);
+
+	var line = d3.line()
+		.x(function(d) { return xScaleLineChart2(d.Name);})
+		.y(function(d) { return yScaleLineChart(d.Lung_Expression)})
+		.curve(d3.curveMonotoneX)
+
+	svg3.append("path")
+		.datum(data)
+		.classed("line", true)
+		.attr("d", line)
+
+	var x_line_axis = d3.axisBottom(xScaleLineChart)
+    var y_line_axis = d3.axisLeft(yScaleLineChart)
+
+	svg3.append("g")
+    	.call(x_line_axis)
+    	.attr("transform", "translate(0," + (height + 2) + ")")
+    	.classed("x_axis", true)
+    	//.tickCenterLabel(false);
+    	.selectAll("text")
+    	.style("text-anchor", "end")
+    	.attr("y", 0)
+    	.attr("x", -9)
+    	.attr("dy", ".35em")
+    	.attr("transform", "rotate(-65)")
+    	//.style("text-anchor", "start");
+
+    svg3.append("text")
+    	.attr("transform", "translate(" + width/2 + " ," + (height + 74) + ")")
+    	.attr("text-anchor", "middle")
+    	.text("Gene")
+    	.attr("class", "axis_label");  
+
+    svg3.append("g")
+    	.call(y_line_axis)
+    	.attr("transform", "translate("+ 0 +", 0)")
+    	.classed("y_axis", true)
+
+    svg3.append("text")
+    	.attr("transform", "rotate(-90)")
+    	.attr("y", -margin.left*0.7)
+    	.attr("x", -(height/2))
+    	.attr("dy", "2em")
+    	.attr("text-anchor", "middle")
+    	.text("Gene Expression Level")
+    	.attr("class", "axis_label");  
+
+  	svg3.append("text")
+    	.text("Gene Expression Levels of Important Genes")
+    	.attr("x", width/2)
+    	.attr("y", -20)
+    	.attr("text-anchor", "middle")
+    	.classed("plot_title",true)    	
+    	.attr("id","lineChartTitle")
+
+	svg3.selectAll(".symbol")
+	    	.data(data)
+	  		.enter()
+	  		.append("circle")
+	    	.classed("symbol", true)
+	    	.attr("cx", function(d) { 
+	    		return xScaleLineChart2(d.Name) 
+	    	})
+	    	.attr("cy", function(d) { 
+	    		return yScaleLineChart(d.Lung_Expression) 
+	    	})
+	    	.attr("r", function(d) {
+	    		return 3
+	    	})
+
 });
 
 //Body image
@@ -238,6 +339,7 @@ d3.xml("svg_human_edit.svg", data => {
 function clickedOnKidney() {
 	console.log("Kidney")
 	d3.select('#bar_chart').remove()
+	d3.select('#line_chart').remove()
 	// d3.select('#legend').remove()
 
 	var svg = d3.select("body")
@@ -253,9 +355,10 @@ function clickedOnKidney() {
 
 	d3.dsv(
 		",",
-		"Gene_importance_complete.csv",
+		"Gene_Importance_With_Expression.csv",
 		function (row) {
 			row.Kidney = +format(row.Kidney);		// Here Kidney is plotted, change it accordingly everywhere 
+			row.Kidney_Expression = +format(row.Kidney_Expression);
 			return row;
 		}
 	).then((data) => {			
@@ -345,12 +448,113 @@ function clickedOnKidney() {
 	     	.style("text-anchor", "middle")
 	     	.text("Gene Name")    
 	  		.attr("class", "axis_label");
+
+		//Line Chart
+		var svg3 = d3.select("body")
+			.select("#graph2")
+			.append("svg")
+			.attr("id","line_chart")
+			.attr("width", fullWidth)
+			.attr("height", fullHeight)
+			.append("g")
+			.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+		//max expression
+		maxExp = d3.max(data, function (d) { return Number(d.Kidney_Expression); });
+
+		var yScaleLineChart = d3.scaleLinear()
+			.domain([0, maxExp])
+			.range([height, 0]);
+
+		var xScaleLineChart = d3.scaleBand()
+			.range([0, width])
+			.domain(data.map(function (d) {
+				return d.Name;
+			}))
+			//.padding(0.05);
+
+		var xScaleLineChart2 = d3.scaleBand()
+			.range([22, width + 22])
+			.domain(data.map(function (d) {
+				return d.Name;
+			}))
+			//.padding(0.05);
+
+		var line = d3.line()
+			.x(function(d) { return xScaleLineChart2(d.Name);})
+			.y(function(d) { return yScaleLineChart(d.Kidney_Expression)})
+			.curve(d3.curveMonotoneX)
+
+		svg3.append("path")
+			.datum(data)
+			.classed("line", true)
+			.attr("d", line)
+
+		var x_line_axis = d3.axisBottom(xScaleLineChart)
+	    var y_line_axis = d3.axisLeft(yScaleLineChart)
+
+		svg3.append("g")
+	    	.call(x_line_axis)
+	    	.attr("transform", "translate(0," + (height + 2) + ")")
+	    	.classed("x_axis", true)
+	    	//.tickCenterLabel(false);
+	    	.selectAll("text")
+	    	.style("text-anchor", "end")
+	    	.attr("y", 0)
+	    	.attr("x", -9)
+	    	.attr("dy", ".35em")
+	    	.attr("transform", "rotate(-65)")
+	    	//.style("text-anchor", "start");
+
+	    svg3.append("text")
+	    	.attr("transform", "translate(" + width/2 + " ," + (height + 74) + ")")
+	    	.attr("text-anchor", "middle")
+	    	.text("Gene")
+	    	.attr("class", "axis_label");  
+
+	    svg3.append("g")
+	    	.call(y_line_axis)
+	    	.attr("transform", "translate("+ 0 +", 0)")
+	    	.classed("y_axis", true)
+
+	    svg3.append("text")
+	    	.attr("transform", "rotate(-90)")
+	    	.attr("y", -margin.left*0.7)
+	    	.attr("x", -(height/2))
+	    	.attr("dy", "2em")
+	    	.attr("text-anchor", "middle")
+	    	.text("Gene Expression Level")
+	    	.attr("class", "axis_label");  
+
+	  	svg3.append("text")
+	    	.text("Gene Expression Levels of Important Genes")
+	    	.attr("x", width/2)
+	    	.attr("y", -20)
+	    	.attr("text-anchor", "middle")
+	    	.classed("plot_title",true)    	
+	    	.attr("id","lineChartTitle")
+
+		svg3.selectAll(".symbol")
+		    	.data(data)
+		  		.enter()
+		  		.append("circle")
+		    	.classed("symbol", true)
+		    	.attr("cx", function(d) { 
+		    		return xScaleLineChart2(d.Name) 
+		    	})
+		    	.attr("cy", function(d) { 
+		    		return yScaleLineChart(d.Kidney_Expression) 
+		    	})
+		    	.attr("r", function(d) {
+		    		return 3
+		    	})
 	});
 }
 
 function clickedOnHema() {
 	console.log("Blood")
 	d3.select('#bar_chart').remove()
+	d3.select('#line_chart').remove()
 	// d3.select('#legend').remove()
 
 	var svg = d3.select("body")
@@ -366,9 +570,10 @@ function clickedOnHema() {
 
 	d3.dsv(
 		",",
-		"Gene_importance_complete.csv",
+		"Gene_Importance_With_Expression.csv",
 		function (row) {
 			row.Blood = +format(row.Blood);		// Here Blood is plotted, change it accordingly everywhere 
+			row.Blood_Expression = +format(row.Blood_Expression);
 			return row;
 		}
 	).then((data) => {			
@@ -458,12 +663,113 @@ function clickedOnHema() {
 	     	.style("text-anchor", "middle")
 	     	.text("Gene Name") 
 	  		.attr("class", "axis_label");
+
+			//Line Chart
+		var svg3 = d3.select("body")
+			.select("#graph2")
+			.append("svg")
+			.attr("id","line_chart")
+			.attr("width", fullWidth)
+			.attr("height", fullHeight)
+			.append("g")
+			.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+		//max expression
+		maxExp = d3.max(data, function (d) { return Number(d.Blood_Expression); });
+
+		var yScaleLineChart = d3.scaleLinear()
+			.domain([0, maxExp])
+			.range([height, 0]);
+
+		var xScaleLineChart = d3.scaleBand()
+			.range([0, width])
+			.domain(data.map(function (d) {
+				return d.Name;
+			}))
+			//.padding(0.05);
+
+		var xScaleLineChart2 = d3.scaleBand()
+			.range([22, width + 22])
+			.domain(data.map(function (d) {
+				return d.Name;
+			}))
+			//.padding(0.05);
+
+		var line = d3.line()
+			.x(function(d) { return xScaleLineChart2(d.Name);})
+			.y(function(d) { return yScaleLineChart(d.Blood_Expression)})
+			.curve(d3.curveMonotoneX)
+
+		svg3.append("path")
+			.datum(data)
+			.classed("line", true)
+			.attr("d", line)
+
+		var x_line_axis = d3.axisBottom(xScaleLineChart)
+	    var y_line_axis = d3.axisLeft(yScaleLineChart)
+
+		svg3.append("g")
+	    	.call(x_line_axis)
+	    	.attr("transform", "translate(0," + (height + 2) + ")")
+	    	.classed("x_axis", true)
+	    	//.tickCenterLabel(false);
+	    	.selectAll("text")
+	    	.style("text-anchor", "end")
+	    	.attr("y", 0)
+	    	.attr("x", -9)
+	    	.attr("dy", ".35em")
+	    	.attr("transform", "rotate(-65)")
+	    	//.style("text-anchor", "start");
+
+	    svg3.append("text")
+	    	.attr("transform", "translate(" + width/2 + " ," + (height + 74) + ")")
+	    	.attr("text-anchor", "middle")
+	    	.text("Gene")
+	    	.attr("class", "axis_label");  
+
+	    svg3.append("g")
+	    	.call(y_line_axis)
+	    	.attr("transform", "translate("+ 0 +", 0)")
+	    	.classed("y_axis", true)
+
+	    svg3.append("text")
+	    	.attr("transform", "rotate(-90)")
+	    	.attr("y", -margin.left*0.7)
+	    	.attr("x", -(height/2))
+	    	.attr("dy", "2em")
+	    	.attr("text-anchor", "middle")
+	    	.text("Gene Expression Level")
+	    	.attr("class", "axis_label");  
+
+	  	svg3.append("text")
+	    	.text("Gene Expression Levels of Important Genes")
+	    	.attr("x", width/2)
+	    	.attr("y", -20)
+	    	.attr("text-anchor", "middle")
+	    	.classed("plot_title",true)    	
+	    	.attr("id","lineChartTitle")
+
+		svg3.selectAll(".symbol")
+		    	.data(data)
+		  		.enter()
+		  		.append("circle")
+		    	.classed("symbol", true)
+		    	.attr("cx", function(d) { 
+		    		return xScaleLineChart2(d.Name) 
+		    	})
+		    	.attr("cy", function(d) { 
+		    		return yScaleLineChart(d.Blood_Expression) 
+		    	})
+		    	.attr("r", function(d) {
+		    		return 3
+		    	})
 	});
 }
 
 function clickedOnLung() {
 	console.log("Lung")
 	d3.select('#bar_chart').remove()
+	d3.select('#line_chart').remove()
 	// d3.select('#legend').remove()
 
 	var svg = d3.select("body")
@@ -479,9 +785,10 @@ function clickedOnLung() {
 
 	d3.dsv(
 		",",
-		"Gene_importance_complete.csv",
+		"Gene_Importance_With_Expression.csv",
 		function (row) {
 			row.Lung = +format(row.Lung);		// Here Lung is plotted, change it accordingly everywhere 
+			row.Lung_Expression = +format(row.Lung_Expression);
 			return row;
 		}
 	).then((data) => {			
@@ -571,12 +878,113 @@ function clickedOnLung() {
 	     	.style("text-anchor", "middle")
 	     	.text("Gene Name")    
 	  		.attr("class", "axis_label");
+
+			//Line Chart
+		var svg3 = d3.select("body")
+			.select("#graph2")
+			.append("svg")
+			.attr("id","line_chart")
+			.attr("width", fullWidth)
+			.attr("height", fullHeight)
+			.append("g")
+			.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+		//max expression
+		maxExp = d3.max(data, function (d) { return Number(d.Lung_Expression); });
+
+		var yScaleLineChart = d3.scaleLinear()
+			.domain([0, maxExp])
+			.range([height, 0]);
+
+		var xScaleLineChart = d3.scaleBand()
+			.range([0, width])
+			.domain(data.map(function (d) {
+				return d.Name;
+			}))
+			//.padding(0.05);
+
+		var xScaleLineChart2 = d3.scaleBand()
+			.range([22, width + 22])
+			.domain(data.map(function (d) {
+				return d.Name;
+			}))
+			//.padding(0.05);
+
+		var line = d3.line()
+			.x(function(d) { return xScaleLineChart2(d.Name);})
+			.y(function(d) { return yScaleLineChart(d.Lung_Expression)})
+			.curve(d3.curveMonotoneX)
+
+		svg3.append("path")
+			.datum(data)
+			.classed("line", true)
+			.attr("d", line)
+
+		var x_line_axis = d3.axisBottom(xScaleLineChart)
+	    var y_line_axis = d3.axisLeft(yScaleLineChart)
+
+		svg3.append("g")
+	    	.call(x_line_axis)
+	    	.attr("transform", "translate(0," + (height + 2) + ")")
+	    	.classed("x_axis", true)
+	    	//.tickCenterLabel(false);
+	    	.selectAll("text")
+	    	.style("text-anchor", "end")
+	    	.attr("y", 0)
+	    	.attr("x", -9)
+	    	.attr("dy", ".35em")
+	    	.attr("transform", "rotate(-65)")
+	    	//.style("text-anchor", "start");
+
+	    svg3.append("text")
+	    	.attr("transform", "translate(" + width/2 + " ," + (height + 74) + ")")
+	    	.attr("text-anchor", "middle")
+	    	.text("Gene")
+	    	.attr("class", "axis_label");  
+
+	    svg3.append("g")
+	    	.call(y_line_axis)
+	    	.attr("transform", "translate("+ 0 +", 0)")
+	    	.classed("y_axis", true)
+
+	    svg3.append("text")
+	    	.attr("transform", "rotate(-90)")
+	    	.attr("y", -margin.left*0.7)
+	    	.attr("x", -(height/2))
+	    	.attr("dy", "2em")
+	    	.attr("text-anchor", "middle")
+	    	.text("Gene Expression Level")
+	    	.attr("class", "axis_label");  
+
+	  	svg3.append("text")
+	    	.text("Gene Expression Levels of Important Genes")
+	    	.attr("x", width/2)
+	    	.attr("y", -20)
+	    	.attr("text-anchor", "middle")
+	    	.classed("plot_title",true)    	
+	    	.attr("id","lineChartTitle")
+
+		svg3.selectAll(".symbol")
+		    	.data(data)
+		  		.enter()
+		  		.append("circle")
+		    	.classed("symbol", true)
+		    	.attr("cx", function(d) { 
+		    		return xScaleLineChart2(d.Name) 
+		    	})
+		    	.attr("cy", function(d) { 
+		    		return yScaleLineChart(d.Lung_Expression) 
+		    	})
+		    	.attr("r", function(d) {
+		    		return 3
+		    	})
 	});
 }
 
 function clickedOnBreast() {
 	console.log("Breast")
 	d3.select('#bar_chart').remove()
+	d3.select('#line_chart').remove()
 	// d3.select('#legend').remove()
 
 	var svg = d3.select("body")
@@ -592,9 +1000,10 @@ function clickedOnBreast() {
 
 	d3.dsv(
 		",",
-		"Gene_importance_complete.csv",
+		"Gene_Importance_With_Expression.csv",
 		function (row) {
 			row.Breast = +format(row.Breast);		// Here Breast is plotted, change it accordingly everywhere 
+			row.Breast_Expression = +format(row.Breast_Expression);
 			return row;
 		}
 	).then((data) => {			
@@ -684,5 +1093,105 @@ function clickedOnBreast() {
 	     	.style("text-anchor", "middle")
 	     	.text("Gene Name")
 	     	.attr("class", "axis_label");  
+
+			//Line Chart
+		var svg3 = d3.select("body")
+			.select("#graph2")
+			.append("svg")
+			.attr("id","line_chart")
+			.attr("width", fullWidth)
+			.attr("height", fullHeight)
+			.append("g")
+			.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+		//max expression
+		maxExp = d3.max(data, function (d) { return Number(d.Breast_Expression); });
+
+		var yScaleLineChart = d3.scaleLinear()
+			.domain([0, maxExp])
+			.range([height, 0]);
+
+		var xScaleLineChart = d3.scaleBand()
+			.range([0, width])
+			.domain(data.map(function (d) {
+				return d.Name;
+			}))
+			//.padding(0.05);
+
+		var xScaleLineChart2 = d3.scaleBand()
+			.range([22, width + 22])
+			.domain(data.map(function (d) {
+				return d.Name;
+			}))
+			//.padding(0.05);
+
+		var line = d3.line()
+			.x(function(d) { return xScaleLineChart2(d.Name);})
+			.y(function(d) { return yScaleLineChart(d.Breast_Expression)})
+			.curve(d3.curveMonotoneX)
+
+		svg3.append("path")
+			.datum(data)
+			.classed("line", true)
+			.attr("d", line)
+
+		var x_line_axis = d3.axisBottom(xScaleLineChart)
+	    var y_line_axis = d3.axisLeft(yScaleLineChart)
+
+		svg3.append("g")
+	    	.call(x_line_axis)
+	    	.attr("transform", "translate(0," + (height + 2) + ")")
+	    	.classed("x_axis", true)
+	    	//.tickCenterLabel(false);
+	    	.selectAll("text")
+	    	.style("text-anchor", "end")
+	    	.attr("y", 0)
+	    	.attr("x", -9)
+	    	.attr("dy", ".35em")
+	    	.attr("transform", "rotate(-65)")
+	    	//.style("text-anchor", "start");
+
+	    svg3.append("text")
+	    	.attr("transform", "translate(" + width/2 + " ," + (height + 74) + ")")
+	    	.attr("text-anchor", "middle")
+	    	.text("Gene")
+	    	.attr("class", "axis_label");  
+
+	    svg3.append("g")
+	    	.call(y_line_axis)
+	    	.attr("transform", "translate("+ 0 +", 0)")
+	    	.classed("y_axis", true)
+
+	    svg3.append("text")
+	    	.attr("transform", "rotate(-90)")
+	    	.attr("y", -margin.left*0.7)
+	    	.attr("x", -(height/2))
+	    	.attr("dy", "2em")
+	    	.attr("text-anchor", "middle")
+	    	.text("Gene Expression Level")
+	    	.attr("class", "axis_label");  
+
+	  	svg3.append("text")
+	    	.text("Gene Expression Levels of Important Genes")
+	    	.attr("x", width/2)
+	    	.attr("y", -20)
+	    	.attr("text-anchor", "middle")
+	    	.classed("plot_title",true)    	
+	    	.attr("id","lineChartTitle")
+
+		svg3.selectAll(".symbol")
+		    	.data(data)
+		  		.enter()
+		  		.append("circle")
+		    	.classed("symbol", true)
+		    	.attr("cx", function(d) { 
+		    		return xScaleLineChart2(d.Name) 
+		    	})
+		    	.attr("cy", function(d) { 
+		    		return yScaleLineChart(d.Breast_Expression) 
+		    	})
+		    	.attr("r", function(d) {
+		    		return 3
+		    	})
 	});
 }
